@@ -5,10 +5,10 @@ namespace App\Services;
 use App\Http\Requests\IncomingMessageRequest;
 use App\Models\User;
 
-class UserService
+class AuthService
 {
 
-    public function findOrCreateUserByPhone(IncomingMessageRequest $request): array
+    public function login(IncomingMessageRequest $request): array
     {
         $user = User::firstOrCreate(
             ['phone' => $request->input('WaId')],
@@ -21,7 +21,7 @@ class UserService
         $token = $user->createToken($request->input('WaId'));
 
         return [
-            'user' => $user->fresh()->load(['level', 'userPreference', 'role', 'latestPlacementTest', 'preferredFoci']),
+            'user' => $user->fresh()->load(['level', 'role', 'preferredFoci']),
             'token' => $token->plainTextToken,
         ];
 

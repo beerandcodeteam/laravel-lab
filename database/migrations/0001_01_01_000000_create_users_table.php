@@ -26,6 +26,8 @@ return new class extends Migration
             $table->integer('daily_target_minutes')->default(15);
             $table->time('preferred_start_time')->nullable();
             $table->json('preferred_days')->nullable();
+            $table->timestamp('onboarding_completed_at')->nullable();
+            $table->json('state')->default(json_encode(['state' => 'onboarding', 'status' => 'pending']));
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

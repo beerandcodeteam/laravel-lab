@@ -3,27 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\IncomingMessageRequest;
-use App\Services\UserService;
+use App\Services\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
-class WhatsAppController extends Controller
+class AuthController extends Controller
 {
 
-    public function __construct(public UserService $userService)
+    public function __construct(public AuthService $userService)
     {
     }
 
-    public function onboarding(IncomingMessageRequest $request)
+    public function login(IncomingMessageRequest $request)
     {
         try{
-            $user = $this->userService->findOrCreateUserByPhone($request);
+            $user = $this->userService->login($request);
             return $user;
         } catch (\Throwable $e) {
             Log::error($e->getMessage());
 
             return response()->json([
-                'status' => 'error',
+                'status' => '
+                error',
                 'message' => 'não foi possível completar a requisição',
             ], 500);
         }

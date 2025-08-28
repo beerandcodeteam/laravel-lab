@@ -18,7 +18,7 @@ return new class extends Migration
         });
 
         DB::table('status')->insert([
-            ['name' => 'in_pogress', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'in_progress', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'completed', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'expired', 'created_at' => now(), 'updated_at' => now()],
         ]);

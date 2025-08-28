@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('level_id')->nullable()->constrained()->cascadeOnDelete();
             $table->text('comment');
+            $table->text('ia_feedback');
             $table->enum('difficulty', ['speaking','listening','reading','writing','grammar','vocabulary'])->nullable();
             $table->tinyInteger('confidence_level')->unsigned()->nullable();
             $table->timestamps();

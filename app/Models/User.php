@@ -4,6 +4,8 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -21,7 +23,14 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
+        'role_id',
+        'level_id',
+        'last_message_at',
+        'daily_target_minutes',
+        'preferred_start_time',
+        'preferred_days',
     ];
 
     /**
@@ -43,7 +52,34 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'last_message_at' => 'datetime',
             'password' => 'hashed',
+            'preferred_days' => 'array',
+            'preferred_start_time' => 'datetime:H:i:s',
         ];
+    }
+
+    /**
+     * Get the role that the user belongs to.
+     */
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    /**
+     * Get the level that the user belongs to.
+     */
+    public function level(): BelongsTo
+    {
+        return $this->belongsTo(Level::class);
+    }
+
+    /**
+     * Get the journey logs for the user.
+     */
+    public function journeyLogs(): HasMany
+    {
+        return $this->hasMany(EnglishJourneyLog::class);
     }
 }

@@ -11,8 +11,9 @@ use function Amp\Websocket\Client\connect;
 class OpenAiRealTimeService
 {
     private ?WebsocketConnection $connection = null;
-
     private $onAudioDelta = null;
+    private $onUserTranscription = null;
+    private $onAssistantMessage = null;
 
     public function connect()
     {
@@ -26,15 +27,17 @@ class OpenAiRealTimeService
 
         $this->connection = connect($handshake);
         $prompt = file_get_contents(resource_path('prompts/interview-prompt.txt'));
-        // Configura a sessão com parâmetros básicos
+
+        // Configura a sessão
         $this->send([
             'type' => 'session.update',
             'session' => [
                 'modalities' => ['text', 'audio'],
-                'turn_detection' => ['type' => 'server_vad', "silence_duration_ms" => 500, 'prefix_padding_ms' => 300],
+                'turn_detection' => ['type' => 'server_vad', 'silence_duration_ms' => 500, 'prefix_padding_ms' => 300],
                 'voice' => 'alloy',
                 'input_audio_format' => 'g711_ulaw',
                 'output_audio_format' => 'g711_ulaw',
+                'input_audio_transcription' => ['model' => 'whisper-1'], // Para transcrever o usuário
                 'instructions' => $prompt,
             ],
         ]);
@@ -57,18 +60,60 @@ class OpenAiRealTimeService
                     continue;
                 }
 
-                switch ($event['type'] ?? null) {
-                    case 'response.audio.delta':
-                        if ($this->onAudioDelta) {
-                            ($this->onAudioDelta)($event['delta'] ?? '');
-                        }
-                        break;
-                }
+                $this->handleEvent($event);
             }
         } catch (\Throwable $e) {
             Log::error('OpenAI Realtime error: ' . $e->getMessage());
         } finally {
             $this->close();
+        }
+    }
+
+    private function handleEvent(array $event): void
+    {
+        $type = $event['type'] ?? null;
+
+        switch ($type) {
+            case 'response.audio.delta':
+                if ($this->onAudioDelta) {
+                    ($this->onAudioDelta)($event['delta'] ?? '');
+                }
+                break;
+
+            case 'conversation.item.input_audio_transcription.completed':
+                if ($this->onUserTranscription) {
+                    $transcript = $event['transcript'] ?? '';
+                    if (!empty(trim($transcript))) {
+                        Log::info('User transcript', ['text' => $transcript]);
+                        ($this->onUserTranscription)($transcript);
+                    }
+                }
+                break;
+
+            case 'response.done':
+                if ($this->onAssistantMessage) {
+                    $response = $event['response'] ?? [];
+                    $output = $response['output'] ?? [];
+
+                    foreach ($output as $item) {
+                        if (isset($item['content'])) {
+                            foreach ($item['content'] as $content) {
+                                if ($content['type'] === 'audio' && isset($content['transcript'])) {
+                                    $transcript = $content['transcript'];
+                                    if (!empty(trim($transcript))) {
+                                        Log::info('Assistant transcript', ['text' => $transcript]);
+                                        ($this->onAssistantMessage)($transcript);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+
+            case 'error':
+                Log::error('OpenAI Error', ['error' => $event['error'] ?? []]);
+                break;
         }
     }
 
@@ -85,13 +130,23 @@ class OpenAiRealTimeService
         $this->connection = null;
     }
 
-    /** Recebe audio delta (g711_ulaw base64) */
+    // Callbacks simples
     public function onAudioDelta(callable $cb): void
     {
         $this->onAudioDelta = $cb;
     }
 
-    /** Envia um pedaço de áudio (base64 g711_ulaw) */
+    public function onUserTranscription(callable $cb): void
+    {
+        $this->onUserTranscription = $cb;
+    }
+
+    public function onAssistantMessage(callable $cb): void
+    {
+        $this->onAssistantMessage = $cb;
+    }
+
+    // Envia áudio do usuário
     public function appendAudioBase64(string $base64): void
     {
         if (!$this->isOpen()) return;
@@ -109,7 +164,7 @@ class OpenAiRealTimeService
         try {
             $this->connection->sendText(json_encode($payload, JSON_UNESCAPED_UNICODE));
         } catch (\Throwable $e) {
-            Log::info('Realtime send error: ' . $e->getMessage());
+            Log::error('Erro ao enviar para OpenAI: ' . $e->getMessage());
         }
     }
 }

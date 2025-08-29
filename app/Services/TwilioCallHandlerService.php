@@ -7,22 +7,25 @@ use Amp\Http\Server\Response;
 use Amp\Websocket\Server\WebsocketClientHandler;
 use Amp\Websocket\WebsocketClient;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class TwilioCallHandlerService implements WebsocketClientHandler
 {
+    private ?string $callSid = null;
+    private ?string $from = null;
+    private array $transcription = [];
+    private string $audioData = '';
+
     public function handleClient(
         WebsocketClient $client,
         Request         $request,
         Response        $response,
     ): void
     {
-        // Aceita apenas no path /call
         if ($request->getUri()->getPath() !== '/call') {
             $client->close();
             return;
         }
-
-        Log::info("Nova chamada recebida");
 
         $realtime = new OpenAiRealTimeService();
 
@@ -39,27 +42,15 @@ class TwilioCallHandlerService implements WebsocketClientHandler
 
                 switch ($event) {
                     case 'start':
-                        $streamSid = $data['start']['streamSid'] ?? null;
-                        Log::info("Twilio START streamSid={$streamSid}");
-
-                        // Conecta ao OpenAI Realtime
-                        $realtime->connect();
-
-                        // Configura callback para enviar áudio da OpenAI para Twilio
-                        $realtime->onAudioDelta(function (string $delta) use ($client, $streamSid) {
-                            $client->sendText(json_encode([
-                                'event' => 'media',
-                                'streamSid' => $streamSid,
-                                'media' => ['payload' => $delta],
-                            ]));
-                        });
-
+                        $this->handleStart($data, $realtime, $client);
                         break;
 
                     case 'media':
                         $payloadB64 = $data['media']['payload'] ?? '';
                         if ($payloadB64 !== '') {
-                            // Envia áudio da Twilio para OpenAI
+                            // Salva o áudio do usuário
+                            $this->audioData .= $payloadB64;
+                            // Envia para OpenAI
                             $realtime->appendAudioBase64($payloadB64);
                         }
                         break;
@@ -72,6 +63,93 @@ class TwilioCallHandlerService implements WebsocketClientHandler
             }
         } finally {
             $realtime->close();
+            $this->saveCallData();
         }
+    }
+
+    private function handleStart(array $data, OpenAiRealTimeService $realtime, WebsocketClient $client): void
+    {
+        $start = $data['start'] ?? [];
+        $streamSid = $start['streamSid'] ?? null;
+
+        // Pega informações básicas
+        $this->callSid = $start['callSid'] ?? null;
+        $this->from = $start['customParameters']['From'] ?? $start['from'] ?? 'Desconhecido';
+
+        Log::info("Chamada de: {$this->callSid}",  $data);
+
+        $realtime->connect();
+
+        // Callback para receber transcrição do usuário
+        $realtime->onUserTranscription(function (string $transcript) {
+            Log::info('Salvando transcrição do usuário', ['text' => $transcript]);
+            $this->addToTranscription('USUÁRIO', $transcript);
+        });
+
+        // Callback para receber texto do assistente
+        $realtime->onAssistantMessage(function (string $message) {
+            Log::info('Salvando mensagem do assistente', ['text' => $message]);
+            $this->addToTranscription('ASSISTENTE', $message);
+        });
+
+        $realtime->onAudioDelta(function (string $delta) use ($client, $streamSid) {
+            $this->audioData .= $delta;
+            $client->sendText(json_encode([
+                'event' => 'media',
+                'streamSid' => $streamSid,
+                'media' => ['payload' => $delta],
+            ]));
+        });
+    }
+
+    private function addToTranscription(string $speaker, string $text): void
+    {
+        if (empty(trim($text))) {
+            return;
+        }
+
+        $this->transcription[] = [
+            'time' => now()->format('H:i:s'),
+            'speaker' => $speaker,
+            'text' => trim($text)
+        ];
+
+        Log::info('Transcrição adicionada', [
+            'speaker' => $speaker,
+            'text' => substr($text, 0, 100) . (strlen($text) > 100 ? '...' : ''),
+            'total_entries' => count($this->transcription)
+        ]);
+    }
+
+    private function saveCallData(): void
+    {
+        if (!$this->callSid || empty($this->transcription)) {
+            return;
+        }
+
+        $fileName = "call_{$this->callSid}_" . now()->format('Y-m-d_H-i-s');
+
+        // Salva transcrição em formato texto simples
+        $transcriptText = "CHAMADA DE: {$this->from}\n";
+        $transcriptText .= "DATA: " . now()->format('d/m/Y H:i:s') . "\n";
+        $transcriptText .= "CALL SID: {$this->callSid}\n";
+        $transcriptText .= str_repeat('=', 50) . "\n\n";
+
+        foreach ($this->transcription as $entry) {
+            $transcriptText .= "[{$entry['time']}] {$entry['speaker']}: {$entry['text']}\n\n";
+        }
+
+        Storage::put("calls/{$fileName}_transcricao.txt", $transcriptText);
+
+        // Salva áudio completo (base64)
+        if (!empty($this->audioData)) {
+            Storage::put("calls/{$fileName}_audio.txt", $this->audioData);
+        }
+
+        Log::info("Dados salvos", [
+            'call_sid' => $this->callSid,
+            'transcription_file' => "{$fileName}_transcricao.txt",
+            'audio_file' => "{$fileName}_audio.txt"
+        ]);
     }
 }

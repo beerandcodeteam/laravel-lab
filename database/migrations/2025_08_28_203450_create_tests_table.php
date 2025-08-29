@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->string('type')->comment('PLACEMENT_TEST, LESSON');
-            $table->decimal('points', 4,2);
+            $table->decimal('points', 4,2)->nullable();
             $table->text("feedback")->nullable();
             $table->timestamps();
         });

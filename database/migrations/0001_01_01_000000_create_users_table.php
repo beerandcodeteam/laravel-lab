@@ -23,7 +23,7 @@ return new class extends Migration
             $table->foreignId('role_id')->default(2)->constrained();
             $table->foreignId('level_id')->nullable()->constrained();
             $table->timestamp('last_message_at')->nullable();
-            $table->integer('daily_target_minutes')->default(15);
+            $table->integer('daily_target_minutes')->nullable();
             $table->time('preferred_start_time')->nullable();
             $table->json('preferred_days')->nullable();
             $table->timestamp('onboarding_completed_at')->nullable();

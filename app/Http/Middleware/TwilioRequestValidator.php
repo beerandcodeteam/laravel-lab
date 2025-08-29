@@ -21,8 +21,6 @@ class TwilioRequestValidator
 
         $requestData = $request->toArray();
 
-        Log::info(config('twilio.twilio_whatsapp_endpoint'));
-
         $isValid = $requestValidator->validate(
             $request->header('X-Twilio-Signature'),
             config('twilio.twilio_whatsapp_endpoint'),

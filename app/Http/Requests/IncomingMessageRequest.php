@@ -23,7 +23,7 @@ class IncomingMessageRequest extends FormRequest
     {
         return [
             'WaId' => 'required|string',
-            'Body' => 'required|string',
+            'Body' => 'nullable|string',
             'ProfileName' => 'required|string'
         ];
     }

@@ -21,7 +21,7 @@ class AuthService
         $token = $user->createToken($request->input('WaId'));
 
         return [
-            'user' => $user->fresh()->load(['level', 'role', 'preferredFoci']),
+            'user' => $user->fresh()->load(['level', 'role']),
             'token' => $token->plainTextToken,
         ];
 

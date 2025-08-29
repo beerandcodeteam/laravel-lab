@@ -92,13 +92,23 @@ class User extends Authenticatable
         return $this->hasOne(EnglishJourneyLog::class)->latestOfMany();
     }
 
-    public function preferredFoci(): BelongsToMany
-    {
-        return $this->belongsToMany(PreferredFocus::class);
-    }
-
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class);
+    }
+
+    public function tests(): HasMany
+    {
+        return $this->hasMany(Test::class);
+    }
+
+    public function lastPlacementTest(): HasOne
+    {
+        return $this->hasOne(Test::class)->where('type', 'placement_test')->latestOfMany();
+    }
+
+    public function lastLessonTest(): HasOne
+    {
+        return $this->hasOne(Test::class)->where('type', 'lesson')->latestOfMany();
     }
 }

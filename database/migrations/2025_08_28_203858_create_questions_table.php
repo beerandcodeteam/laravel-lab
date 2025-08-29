@@ -15,11 +15,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('test_id')->constrained();
             $table->string('type')->comment('LISTENING, WRITING, MCQ, VOCAB');
-            $table->string('question');
+            $table->text('question');
             $table->string('question_audio_path')->nullable();
             $table->json('options')->nullable();
-            $table->string('answer')->nullable();
+            $table->text('answer')->nullable();
             $table->string('answer_path')->nullable();
+            $table->decimal('points', 4,2)->nullable();
             $table->timestamps();
         });
     }

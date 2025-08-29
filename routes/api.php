@@ -14,6 +14,8 @@ Route::post('incoming-message', [AuthController::class, 'login'])
     ->middleware([\App\Http\Middleware\TwilioRequestValidator::class])
     ->name('incoming-message');
 
+Route::post('incoming-call', \App\Http\Controllers\CallController::class);
+
 
 Route::middleware('auth:sanctum')->group(function () {
 

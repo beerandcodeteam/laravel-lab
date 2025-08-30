@@ -24,7 +24,7 @@ class LoginRequest extends FormRequest
         return [
             'ProfileName' => 'required|string|max:255',
             'WaId' => 'required|string|max:255',
-            'Body' => 'required|string',
+            'Body' => 'nullable|string',
             'MediaUrl0' => 'sometimes|string',
         ];
     }

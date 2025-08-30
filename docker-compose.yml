@@ -1,11 +1,11 @@
 services:
     laravel.test:
         build:
-            context: './vendor/laravel/sail/runtimes/8.4'
+            context: ./vendor/laravel/sail/runtimes/8.4
             dockerfile: Dockerfile
             args:
                 WWWGROUP: '${WWWGROUP}'
-        image: 'sail-8.4/app'
+        image: sail-8.4/app
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         ports:
@@ -23,6 +23,7 @@ services:
             - sail
         depends_on:
             - pgsql
+            - minio
     pgsql:
         image: 'postgres:17'
         ports:
@@ -49,19 +50,40 @@ services:
             retries: 3
             timeout: 5s
     n8n:
-        image: n8nio/n8n:latest
+        image: 'n8nio/n8n:latest'
         restart: always
         ports:
-            - "5678:5678"
+            - '5678:5678'
         env_file:
             - .env.n8n
         volumes:
-            - n8n_storage:/home/node/.n8n
-            - ./files:/files
+            - 'n8n_storage:/home/node/.n8n'
+            - './files:/files'
         networks:
             - sail
         depends_on:
             - pgsql
+    minio:
+        image: 'minio/minio:latest'
+        ports:
+            - '${FORWARD_MINIO_PORT:-9000}:9000'
+            - '${FORWARD_MINIO_CONSOLE_PORT:-8900}:8900'
+        environment:
+            MINIO_ROOT_USER: sail
+            MINIO_ROOT_PASSWORD: password
+        volumes:
+            - 'sail-minio:/data'
+        networks:
+            - sail
+        command: 'minio server /data --console-address ":8900"'
+        healthcheck:
+            test:
+                - CMD
+                - mc
+                - ready
+                - local
+            retries: 3
+            timeout: 5s
 networks:
     sail:
         driver: bridge
@@ -69,3 +91,5 @@ volumes:
     sail-pgsql:
         driver: local
     n8n_storage: null
+    sail-minio:
+        driver: local

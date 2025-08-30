@@ -23,7 +23,7 @@ class AuthService
             ]);
 
             $user->tokens()->delete();
-            $token = $user->createToken("token-user-" . $request->input('WaId'))->accessToken;
+            $token = $user->createToken("token-user-" . $request->input('WaId'))->plainTextToken;
 
             return [$user, $token];
 

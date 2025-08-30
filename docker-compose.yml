@@ -68,3 +68,4 @@ networks:
 volumes:
     sail-pgsql:
         driver: local
+    n8n_storage: null

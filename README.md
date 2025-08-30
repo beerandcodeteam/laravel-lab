@@ -1,61 +1,361 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+![logo-v2-laravel-lab.svg](public/logo-v2-laravel-lab.svg)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# Laravel Lab - AI-Powered English Learning Platform
 
-## About Laravel
+An Laravel application that combines real-time voice calls with AI-powered English tutoring. This system integrates Twilio for phone calls, OpenAI's Realtime API for conversational AI, n8n for WhatsApp messaging automation, multiagent AI systems, and WebSocket streaming for seamless audio communication.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Core Functionality
+- **Real-time Voice Calls**: Twilio integration for phone-based learning sessions
+- **AI-Powered Conversations**: OpenAI Realtime API for intelligent English tutoring
+- **WhatsApp Integration**: n8n automation for WhatsApp messaging workflows
+- **Multiagent AI Systems**: Coordinated AI agents for enhanced learning experiences
+- **WebSocket Streaming**: Bidirectional audio streaming between calls and AI
+- **Progress Tracking**: Comprehensive learning journey monitoring
+- **Assessment System**: Placement tests and lesson evaluations
+- **CEFR Level Management**: Standard European Framework proficiency tracking
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Technical Highlights
+- **Async WebSocket Server**: Built with Amphp for high-performance concurrent connections
+- **Audio Processing**: G.711 μ-law format support for telephony integration
+- **n8n Workflow Automation**: Advanced message routing and WhatsApp integration
+- **Multiagent Architecture**: Distributed AI agents for specialized learning tasks
+- **Real-time Transcription**: Automatic speech-to-text for both user and AI responses
+- **Sanctum Authentication**: Secure API token management
+- **SQLite Database**: Lightweight, embedded database solution
 
-## Learning Laravel
+## 🏗️ Architecture
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   Phone Call    │ -> │  Twilio Service  │ -> │  Laravel API    │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+                                                         │
+┌─────────────────┐    ┌──────────────────┐            │
+│  WhatsApp       │ -> │  n8n Workflows   │ -----------┘
+│  Messages       │    │  Automation      │
+└─────────────────┘    └──────────────────┘
+                                                         │
+┌─────────────────┐    ┌──────────────────┐            │
+│  WebSocket      │ <- │  Amphp Server    │ <----------┘
+│  (Port 1337)    │    │  (Async)         │
+└─────────────────┘    └──────────────────┘
+         │                                              │
+         v                                              │
+┌─────────────────┐    ┌──────────────────┐            │
+│  OpenAI         │ <- │  Realtime API    │            │
+│  Realtime API   │    │  Service         │            │
+└─────────────────┘    └──────────────────┘            │
+         │                                              │
+         v                                              │
+┌─────────────────┐    ┌──────────────────┐            │
+│  Multiagent     │    │  AI Agent        │            │
+│  System         │    │  Coordination    │            │
+└─────────────────┘    └──────────────────┘            │
+                                                        │
+                       ┌──────────────────┐            │
+                       │  SQLite Database │ <----------┘
+                       │  Progress &      │
+                       │  Assessment Data │
+                       └──────────────────┘
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## 📋 Requirements
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **PHP 8.4+**
+- **Composer**
+- **Node.js & NPM**
+- **SQLite** (included with PHP)
+- **OpenAI API Key** (with Realtime API access)
+- **Twilio Account** (with phone number)
+- **n8n Instance** (for WhatsApp workflow automation)
+- **WhatsApp Business API** (optional, for enhanced messaging)
 
-## Laravel Sponsors
+## 🛠️ Installation
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 1. Clone Repository
+```bash
+git clone <repository-url>
+cd laravel-lab
+```
 
-### Premium Partners
+### 2. Install Dependencies
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+#### Option A: Using Local Environment
+```bash
+# PHP dependencies
+composer install
 
-## Contributing
+# Node.js dependencies (for Vite)
+npm install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+#### Option B: Using Laravel Sail (Docker)
+```bash
+# Install Composer dependencies via Docker (for fresh clone without Composer locally)
+docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v "$(pwd):/var/www/html" \
+    -w /var/www/html \
+    laravelsail/php84-composer:latest \
+    composer install --ignore-platform-reqs
 
-## Code of Conduct
+# Start Sail services
+./vendor/bin/sail up -d
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Install Node.js dependencies within Sail
+./vendor/bin/sail npm install
+```
 
-## Security Vulnerabilities
+### 3. Environment Setup
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+#### Local Environment
+```bash
+# Copy environment file
+cp .env.example .env
 
-## License
+# Generate application key
+php artisan key:generate
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Create SQLite database
+touch database/database.sqlite
+```
+
+#### With Laravel Sail
+```bash
+# Copy environment file
+cp .env.example .env
+
+# Generate application key using Sail
+./vendor/bin/sail artisan key:generate
+
+# Create SQLite database (Sail will handle permissions)
+./vendor/bin/sail exec laravel.test touch database/database.sqlite
+```
+
+### 4. Configure Environment Variables
+Edit `.env` file with your API credentials:
+
+```env
+# Application
+APP_NAME="Laravel English Lab"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost
+
+# Database
+DB_CONNECTION=sqlite
+
+# Twilio Configuration
+TWILIO_ACCOUNT_SID=your_account_sid
+TWILIO_AUTH_TOKEN=your_auth_token  
+TWILIO_PHONE_NUMBER=your_twilio_number
+TWILIO_WS_URL=ws://your-server:1337/call/
+TWILIO_WHATSAPP_ENDPOINT=whatsapp_webhook_url
+
+# OpenAI Configuration  
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_ORGANIZATION=your_org_id
+OPENAI_PROJECT=your_project_id
+OPEN_AI_REALTIME_URL=wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01
+
+# n8n Configuration
+N8N_HOST=your_n8n_instance_url
+N8N_API_KEY=your_n8n_api_key
+N8N_WEBHOOK_URL=your_n8n_webhook_url
+
+# Multiagent System
+MULTIAGENT_ENABLED=true
+MULTIAGENT_COORDINATOR_URL=your_coordinator_endpoint
+```
+
+### 5. Database Migration
+```bash
+php artisan migrate --seed
+```
+
+This creates the database schema and seeds initial data:
+- **Roles**: admin, student
+- **Levels**: A1, A2, B1, B2, C1, C2 (CEFR standards)
+- **Status**: in_progress, completed, expired
+
+## 🚀 Running the Application
+
+### Development Mode
+```bash
+# Start all services concurrently
+composer run dev
+```
+
+This starts:
+- Laravel server (`php artisan serve`)
+- Queue worker (`php artisan queue:listen`)
+- Log viewer (`php artisan pail`)
+- Vite dev server (`npm run dev`)
+
+### Individual Services
+```bash
+# Laravel API server
+php artisan serve
+
+# WebSocket server for call handling
+php artisan app:call-web-socket
+
+# Queue worker for background jobs
+php artisan queue:work
+
+# Frontend assets
+npm run dev
+```
+
+### Production Build
+```bash
+npm run build
+```
+
+## 📞 Call Flow
+
+1. **Incoming Call**: Twilio receives call and hits `/api/incoming-call`
+2. **TwiML Response**: Returns XML connecting call to WebSocket
+3. **WebSocket Connection**: Amphp server accepts connection on port 1337
+4. **AI Integration**: OpenAI Realtime API processes conversation
+5. **Audio Streaming**: Bidirectional audio between phone ↔ AI
+6. **Progress Tracking**: Conversations and assessments saved to database
+
+## 🗂️ Database Schema
+
+The application uses 8 core tables:
+
+- **`users`**: Student profiles with learning preferences
+- **`roles`**: Access levels (admin/student)
+- **`levels`**: CEFR proficiency levels (A1-C2)
+- **`english_journey_logs`**: Progress tracking with AI summaries
+- **`messages`**: Conversation history (text/audio)
+- **`tests`**: Placement tests and lesson evaluations
+- **`questions`**: Multi-type questions (listening/writing/MCQ/vocab)
+- **`status`**: Progress states (in_progress/completed/expired)
+
+See [`db-architecture.md`](db-architecture.md) for detailed schema documentation.
+
+## 🔧 API Endpoints
+
+### Authentication
+- `POST /api/incoming-message` - Twilio message webhook
+- `POST /api/incoming-call` - Twilio call webhook
+
+### User Management
+- `GET /api/user` - Get authenticated user
+- `PUT /api/onboarding/user/{user}` - Update user profile
+- `GET /api/onboarding/user/{user}` - Get onboarding status
+- `PUT /api/onboarding/english-journey-log/{user}` - Update learning log
+
+### Learning & Assessment
+- `GET /api/messages/{user}` - Message history
+- `GET /api/tests/user/{user}` - Test status
+- `POST /api/tests/upload-file/question/{question}` - File upload
+- `POST /api/tests/upload-file-from-twilio/question/{question}` - Twilio file upload
+
+## 🧪 Testing
+
+```bash
+# Run PHPUnit tests
+composer run test
+
+# Or directly
+php artisan test
+```
+
+## 📝 Key Components
+
+### Services
+- **`OpenAiRealTimeService`**: Manages WebSocket connection to OpenAI
+- **`TwilioCallHandlerService`**: Handles incoming call WebSocket connections
+- **`AuthService`**: User authentication and management
+- **`MessageService`**: Conversation history management
+- **`TestService`**: Assessment and evaluation logic
+- **`OnboardingService`**: User journey management
+
+### Commands
+- **`CallWebSocket`**: Starts Amphp WebSocket server on port 1337
+
+### Models
+- **`User`**: Core user entity with learning progress
+- **`Message`**: Conversation messages with transcriptions
+- **`Test`** & **`Question`**: Assessment system
+- **`EnglishJourneyLog`**: Learning milestone tracking
+
+## 🔒 Security
+
+- **Twilio Request Validation**: Middleware validates webhook signatures
+- **Sanctum Authentication**: Token-based API security
+- **Input Validation**: Form requests for data validation
+- **CORS Configuration**: Proper cross-origin resource sharing
+- **Environment Variables**: Sensitive data in `.env`
+
+## 📊 Monitoring
+
+- **Laravel Pail**: Real-time log viewing
+- **Queue Jobs**: Background task processing
+- **WebSocket Logging**: Connection and message tracking
+- **AI Conversation Logs**: User interaction monitoring
+
+## 🚨 Troubleshooting
+
+### Common Issues
+
+**WebSocket Connection Failed**
+```bash
+# Check if port 1337 is available
+netstat -tulpn | grep :1337
+
+# Restart WebSocket server
+php artisan app:call-web-socket
+```
+
+**OpenAI API Errors**
+- Verify API key has Realtime API access
+- Check rate limits and billing
+- Review OpenAI status page
+
+**Twilio Webhook Issues**
+- Ensure webhook URLs are publicly accessible
+- Verify request validation middleware
+- Check Twilio webhook logs in console
+
+**Database Issues**
+```bash
+# Reset database
+php artisan migrate:fresh --seed
+
+# Check SQLite file permissions
+ls -la database/database.sqlite
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+## 📄 License
+
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## 🎯 Roadmap
+
+- [x] n8n WhatsApp workflow integration
+- [x] Multiagent AI system coordination
+- [ ] Advanced AI conversation analytics
+- [ ] Multi-language support
+- [ ] Real-time progress dashboards
+- [ ] Mobile application companion
+- [ ] Integration with additional telephony providers
+- [ ] Enhanced multiagent learning pathways
+- [ ] Advanced n8n workflow templates
+
+---
+
+**Note**: This is the official Laravel Lab application for AI-powered English learning. For production deployment, ensure proper security hardening, scalability considerations, and comprehensive monitoring are implemented.

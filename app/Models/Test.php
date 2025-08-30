@@ -4,30 +4,31 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Question extends Model
+class Test extends Model
 {
     protected $fillable = [
-        'test_id',
+        'user_id',
         'type',
-        'question',
-        'question_audio_path',
-        'options',
-        'answer',
-        'answer_path',
         'points',
+        'feedback',
     ];
 
     protected function casts(): array
     {
         return [
-            'options' => 'array',
             'points' => 'decimal:2',
         ];
     }
 
-    public function test(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Tests::class);
+        return $this->belongsTo(User::class);
+    }
+
+    public function questions(): HasMany
+    {
+        return $this->hasMany(Question::class, 'test_id');
     }
 }

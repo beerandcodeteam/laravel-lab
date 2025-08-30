@@ -23,7 +23,7 @@ An Laravel application that combines real-time voice calls with AI-powered Engli
 - **Multiagent Architecture**: Distributed AI agents for specialized learning tasks
 - **Real-time Transcription**: Automatic speech-to-text for both user and AI responses
 - **Sanctum Authentication**: Secure API token management
-- **SQLite Database**: Lightweight, embedded database solution
+- **pgsql Database**: Lightweight, embedded database solution
 
 ## 🏗️ Architecture
 
@@ -55,7 +55,7 @@ An Laravel application that combines real-time voice calls with AI-powered Engli
 └─────────────────┘    └──────────────────┘            │
                                                         │
                        ┌──────────────────┐            │
-                       │  SQLite Database │ <----------┘
+                       │  pgsql Database │ <----------┘
                        │  Progress &      │
                        │  Assessment Data │
                        └──────────────────┘
@@ -66,7 +66,7 @@ An Laravel application that combines real-time voice calls with AI-powered Engli
 - **PHP 8.4+**
 - **Composer**
 - **Node.js & NPM**
-- **SQLite** (included with PHP)
+- **pgsql** (included with PHP)
 - **OpenAI API Key** (with Realtime API access)
 - **Twilio Account** (with phone number)
 - **n8n Instance** (for WhatsApp workflow automation)
@@ -118,8 +118,8 @@ cp .env.example .env
 # Generate application key
 php artisan key:generate
 
-# Create SQLite database
-touch database/database.sqlite
+# Create pgsql database
+touch database/database.pgsql
 ```
 
 #### With Laravel Sail
@@ -130,8 +130,8 @@ cp .env.example .env
 # Generate application key using Sail
 ./vendor/bin/sail artisan key:generate
 
-# Create SQLite database (Sail will handle permissions)
-./vendor/bin/sail exec laravel.test touch database/database.sqlite
+# Create pgsql database (Sail will handle permissions)
+./vendor/bin/sail exec laravel.test touch database/database.pgsql
 ```
 
 ### 4. Configure Environment Variables
@@ -145,7 +145,7 @@ APP_DEBUG=true
 APP_URL=http://localhost
 
 # Database
-DB_CONNECTION=sqlite
+DB_CONNECTION=pgsql
 
 # Twilio Configuration
 TWILIO_ACCOUNT_SID=your_account_sid
@@ -328,8 +328,8 @@ php artisan app:call-web-socket
 # Reset database
 php artisan migrate:fresh --seed
 
-# Check SQLite file permissions
-ls -la database/database.sqlite
+# Check pgsql file permissions
+ls -la database/database.pgsql
 ```
 
 ## 🤝 Contributing

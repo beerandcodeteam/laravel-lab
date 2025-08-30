@@ -83,7 +83,7 @@ class User extends Authenticatable
         return $this->hasMany(Test::class);
     }
 
-    public function lastTest(): HasOne
+    public function lastLessonTest(): HasOne
     {
         return $this->hasOne(Test::class)->latestOfMany();
     }
@@ -93,7 +93,7 @@ class User extends Authenticatable
         return $this->hasMany(EnglishJourneyLog::class);
     }
 
-    public function lastEnglishJourneyLog(): HasOne
+    public function lastJourneyLog(): HasOne
     {
         return $this->hasOne(EnglishJourneyLog::class)->latestOfMany();
     }

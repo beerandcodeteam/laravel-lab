@@ -58,7 +58,7 @@ class CallWebSocket extends Command
         $websocket = new Websocket($server, $logger, $acceptor, $clientHandler);
 
         $router = new Router($server, $logger, $errorHandler);
-        $router->addRoute('GET', '/call', $websocket);
+        $router->addRoute('GET', '/call/', $websocket);
 
         $server->start($router, $errorHandler);
 

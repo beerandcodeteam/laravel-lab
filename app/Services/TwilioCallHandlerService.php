@@ -8,6 +8,7 @@ use Amp\Websocket\Server\WebsocketClientHandler;
 use Amp\Websocket\WebsocketClient;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Twilio\Security\RequestValidator;
 
 class TwilioCallHandlerService implements WebsocketClientHandler
 {
@@ -22,18 +23,25 @@ class TwilioCallHandlerService implements WebsocketClientHandler
         Response        $response,
     ): void
     {
-        if ($request->getUri()->getPath() !== '/call') {
+        $realtime = new OpenAiRealTimeService();
+        $requestValidator = new RequestValidator(config('twilio.auth_token'));
+        parse_str($request->getUri()->getQuery() ?? '', $params);
+        $isValid = $requestValidator->validate(
+            $request->getHeaders()['x-twilio-signature'][0],
+            "wss://825537864fbc.ngrok-free.app/call/",
+            $params
+        );
+
+        if (!$isValid) {
             $client->close();
             return;
         }
 
-        $realtime = new OpenAiRealTimeService();
-
         try {
             foreach ($client as $message) {
+
                 $raw = (string)$message;
                 $data = json_decode($raw, true);
-
                 if (!is_array($data)) {
                     continue;
                 }
@@ -129,11 +137,7 @@ class TwilioCallHandlerService implements WebsocketClientHandler
 
         $fileName = "call_{$this->callSid}_" . now()->format('Y-m-d_H-i-s');
 
-        // Salva transcrição em formato texto simples
-        $transcriptText = "CHAMADA DE: {$this->from}\n";
-        $transcriptText .= "DATA: " . now()->format('d/m/Y H:i:s') . "\n";
-        $transcriptText .= "CALL SID: {$this->callSid}\n";
-        $transcriptText .= str_repeat('=', 50) . "\n\n";
+        $transcriptText = "";
 
         foreach ($this->transcription as $entry) {
             $transcriptText .= "[{$entry['time']}] {$entry['speaker']}: {$entry['text']}\n\n";

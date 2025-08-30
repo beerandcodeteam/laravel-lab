@@ -101,7 +101,6 @@ class OpenAiRealTimeService
                                 if ($content['type'] === 'audio' && isset($content['transcript'])) {
                                     $transcript = $content['transcript'];
                                     if (!empty(trim($transcript))) {
-                                        Log::info('Assistant transcript', ['text' => $transcript]);
                                         ($this->onAssistantMessage)($transcript);
                                     }
                                 }

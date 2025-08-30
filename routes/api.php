@@ -37,5 +37,4 @@ Route::middleware('auth:sanctum')->group(function () {
             ->name('upload-file');
     });
 
-
 });

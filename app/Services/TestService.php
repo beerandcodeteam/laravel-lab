@@ -35,13 +35,15 @@ class TestService
     {
         $base_64 = base64_decode($request->data);
 
-        $path = 'listening-' . $question->id . '.mp3';
+        $path = 'listening/listening-' . $question->id . '.mp3';
         Storage::put($path, $base_64);
 
         $question->question_audio_path = $path;
         $question->save();
 
-        return '/n8n/' . $path;
+        $temporaryUrl = Storage::temporaryUrl($path, now()->addMinutes(5));
+
+        return $temporaryUrl;
     }
 
 

@@ -35,9 +35,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('user/{user}', [\App\Http\Controllers\TestsController::class, 'verifyTestSituation'])
             ->name('test');
         Route::post('upload-file/question/{question}', [\App\Http\Controllers\TestsController::class, 'uploadFile'])
-            ->name('upload-file');
+            ->name('question-upload-file');
         Route::post('upload-file-from-twilio/question/{question}', [\App\Http\Controllers\TestsController::class, 'uploadFileFromTwilio'])
-            ->name('upload-file');
+            ->name('twilio-upload-file');
     });
 
 });

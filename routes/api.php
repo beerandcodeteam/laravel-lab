@@ -23,7 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('user/{user}', [OnboardingController::class, 'verifyOnboardingInfos'])
             ->name('get-user');
         Route::put('english-journey-log/{user}', [OnboardingController::class, 'updateEnglishJourneyLog'])
-            ->name('update-user');
+            ->name('update-journey-user');
     });
 
     Route::prefix('messages')->name('messages.')->group(function () {

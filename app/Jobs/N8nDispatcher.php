@@ -31,7 +31,7 @@ class N8nDispatcher implements ShouldQueue
     public function handle(): void
     {
         Log::info($this->token);
-        $this->user->load('lastJourneyLog', 'lastLessonTest');
+        $this->user->load('lastJourneyLog', 'lastLessonTest.questions');
         Http::post(config('n8n.webhook_endpoint'), [
             'user' => $this->user,
             'token' => explode("|", $this->token)[1],

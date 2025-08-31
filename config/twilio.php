@@ -5,5 +5,6 @@ return [
     'auth_token' => env('TWILIO_AUTH_TOKEN'),
     'phone_number' => env('TWILIO_PHONE_NUMBER'),
     'twilio_whatsapp_endpoint' => env('TWILIO_WHATSAPP_ENDPOINT'),
+    'twilio_call_endpoint' => env('TWILIO_CALL_ENDPOINT'),
     'twilio_ws_url' => env('TWILIO_WS_URL'),
 ];
